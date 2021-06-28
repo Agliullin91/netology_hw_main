@@ -22,6 +22,7 @@ class Human:
 
 class Student(Human):
     student_list = []
+
     def __init__(self, name, surname, gender, *courses):
         super().__init__(name, surname, gender)
         self.finished_courses = []
@@ -58,10 +59,10 @@ class Student(Human):
             else:
                 pass
         if len(course_grade_list) == 0:
-            print(f'{course}: Nobody has any rating on this course.')
+            return f'{course}: Nobody has any rating on this course.'
         else:
             avr = sum(course_grade_list) / len(course_grade_list)
-            print(f'{course}: {round(avr, 2)}')
+            return f'{course}: {round(avr, 2)}'
 
 
 class Mentor(Human):
@@ -71,9 +72,12 @@ class Mentor(Human):
 
 
 class Lecturer(Mentor):
+    lecturers_list = []
+
     def __init__(self, name, surname, *courses):
         super().__init__(name, surname, *courses)
         self.grades = {}
+        self.lecturers_list += [self]
 
     def __str__(self):
         result = f'Имя: {self.name}\nФамилия: {self.surname}\n' \
@@ -85,6 +89,19 @@ class Lecturer(Mentor):
             return 'Ошибка'
         else:
             return super()._avr_grade(self) < super()._avr_grade(other)
+
+    def avr_course_grade(course):
+        course_grade_list = []
+        for item in Lecturer.lecturers_list:
+            if course in item.grades.keys():
+                course_grade_list += item.grades.get(course)
+            else:
+                pass
+        if len(course_grade_list) == 0:
+            return f'{course}: Nobody has any rating on this course.'
+        else:
+            avr = sum(course_grade_list) / len(course_grade_list)
+            return f'{course}: {round(avr, 2)}'
 
 
 class Reviewer(Mentor):
@@ -137,7 +154,12 @@ print(f'Katy Perry < Harry Potter: {katy < harry}')
 print()
 print(f'Gandalf The Grey > Rick Sanchez: {gandalf > rick}')
 print(f'Rick Sanchez < Gandalf The Grey: {rick < gandalf}')
+# Блок проверки: Задача №4
 print()
-Student.avr_course_grade('html')
-Student.avr_course_grade('Python')
-Student.avr_course_grade('Javascript')
+print(Student.avr_course_grade('html'))
+print(Student.avr_course_grade('Python'))
+print(Student.avr_course_grade('Javascript'))
+print()
+print(Lecturer.avr_course_grade('html'))
+print(Lecturer.avr_course_grade('Python'))
+print(Lecturer.avr_course_grade('C++'))
