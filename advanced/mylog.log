@@ -1,0 +1,26 @@
+INFO     [2021-10-03 17:51:42,858] |function name:my_sum| arguments:(4, 8, 3), {}| result:15|
+DEBUG    [2021-10-03 18:02:52,735] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:53,755] https://superheroapi.com:443 "GET /api/2619421814940190/search/Hulk HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:53,758] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:54,175] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/search/Hulk HTTP/1.1" 200 1314
+DEBUG    [2021-10-03 18:02:54,182] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:54,896] https://superheroapi.com:443 "GET /api/2619421814940190/332/powerstats HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:54,900] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:55,305] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/332/powerstats HTTP/1.1" 200 128
+DEBUG    [2021-10-03 18:02:55,311] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:55,832] https://superheroapi.com:443 "GET /api/2619421814940190/search/Thanos HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:55,835] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:56,233] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/search/Thanos HTTP/1.1" 200 697
+DEBUG    [2021-10-03 18:02:56,240] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:56,746] https://superheroapi.com:443 "GET /api/2619421814940190/655/powerstats HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:56,749] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:57,261] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/655/powerstats HTTP/1.1" 200 125
+DEBUG    [2021-10-03 18:02:57,268] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:57,900] https://superheroapi.com:443 "GET /api/2619421814940190/search/Captain%20America HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:57,903] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:58,298] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/search/Captain%20America HTTP/1.1" 200 787
+DEBUG    [2021-10-03 18:02:58,734] Starting new HTTPS connection (1): superheroapi.com:443
+DEBUG    [2021-10-03 18:02:59,247] https://superheroapi.com:443 "GET /api/2619421814940190/149/powerstats HTTP/1.1" 302 683
+DEBUG    [2021-10-03 18:02:59,249] Starting new HTTPS connection (1): www.superheroapi.com:443
+DEBUG    [2021-10-03 18:02:59,510] https://www.superheroapi.com:443 "GET /api.php/2619421814940190/149/powerstats HTTP/1.1" 200 135
+INFO     [2021-10-03 18:02:59,514] |function name:whos_thesmartest_one| arguments:('Hulk', 'Thanos', 'Captain America'), {}| result:None|
