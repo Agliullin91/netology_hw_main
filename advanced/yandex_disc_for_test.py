@@ -10,7 +10,15 @@ def get_files_list():
     files_url = 'https://cloud-api.yandex.net/v1/disk/resources/files'
     headers = {'Authorization': token_ya}
     response = requests.get(files_url, headers=headers)
-    return response.json()
+    return response.json(), response.status_code
+
+
+def get_file_meta(file_path):
+    files_url = 'https://cloud-api.yandex.net/v1/disk/resources'
+    headers = {'Authorization': token_ya}
+    params = {'path': file_path}
+    response = requests.get(files_url, headers=headers, params=params)
+    return response.json(), response.status_code
 
 
 def create_folder(folder_path):
@@ -18,7 +26,6 @@ def create_folder(folder_path):
     headers = {'Authorization': token_ya}
     params = {"path": folder_path}
     response = requests.put(files_url, headers=headers, params=params)
-    response.raise_for_status()
     return response.status_code
 
 
@@ -40,5 +47,10 @@ def upload_file_to_disk(disk_file_path, filename):
 
 
 # print(upload_file_to_disk(disk_file_path="netology_hw/text.txt", filename="text.txt"))
-# pprint(get_files_list())
-print(create_folder("test_folder"))
+telo = get_files_list()
+print(telo[1])
+# for item in telo[0]:
+#     print(item[''])
+# print(create_folder("test_folder"))
+print(get_file_meta("test_folder1"))
+print(get_file_meta("test_folder"))
