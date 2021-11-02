@@ -1,9 +1,20 @@
+from random import randrange
+from config import token_vk_group, token_vk
 import time
-import os.path
-from config import token_vk
-from VKinder_json import _result_json, _get_offset, show_result
 import requests
+
 import vk_api
+from vk_api.longpoll import VkLongPoll, VkEventType
+
+token = token_vk_group
+token_vk = token_vk
+
+vk = vk_api.VkApi(token=token)
+longpoll = VkLongPoll(vk)
+
+
+def write_msg(user_id, message):
+    vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7),})
 
 
 def _resp_check(method_name, params):
@@ -19,15 +30,9 @@ def _resp_check(method_name, params):
         return resp
 
 
-def _get_user_id(user_pagename):
-    """Служебная. Функция для получения ID пользователя по имени его страницы."""
-    resp = _resp_check('users.get', params={'user_ids': user_pagename, 'fields': 'screen_name', 'access_token': token_vk, 'v': '5.131'})
-    return resp.get('response')[0].get('id')
-
-
-def _get_search_params(user_pagename):
-    """Служебная. Определяет параметры поиска."""
-    resp = _resp_check('users.get', params={'user_ids': user_pagename, 'fields': 'sex, bdate, city, relation', 'access_token': token_vk, 'v': '5.131'})
+def get_info(user_id):
+    resp = _resp_check('users.get', params={'user_ids': user_id, 'fields': 'sex, bdate, city, relation',
+                                            'access_token': token_vk, 'v': '5.131'})
     response = resp.get('response')
     search_params = []
     if 'sex' in response[0]:
@@ -68,12 +73,15 @@ def _get_search_params(user_pagename):
 
 def _user_search(sex, city, relation, birth_year, offset=1):
     """Служебная. Поиск по заданным параметрам."""
-    resp = _resp_check('users.search', params={'offset': offset, 'count': 100, 'fields': 'screen_name', 'sex': sex, 'city': city, 'status': relation, 'birth_year': birth_year, 'has_photo': 1, 'access_token': token_vk, 'v': '5.131'})
+    resp = _resp_check('users.search',
+                       params={'offset': offset, 'count': 20, 'fields': 'screen_name', 'sex': sex, 'city': city,
+                               'status': relation, 'birth_year': birth_year, 'has_photo': 1, 'access_token': token_vk,
+                               'v': '5.131'})
     response = resp.get('response').get('items')
     search_data = {'offset': offset}
     i = 1
     for item in response:
-        if not item.get('is_closed') and i < 11:
+        if not item.get('is_closed') and i < 3:
             href = f"https://vk.com/{item.get('screen_name')}"
             time.sleep(0.5)
             search_data[href] = _search_result_get_photo(item.get('id'))
@@ -112,19 +120,18 @@ def _search_result_get_photo(user_id):
     return photo_href_list
 
 
-def main(user_pagename):
-    """Основная. Принимает на вход страницу пользователя, на выходе создает json-файл с результатами поиска."""
-    # user_id = _get_user_id(user_pagename)
-    if os.path.exists(f'{user_pagename}.json') is True:
-        user_offset = _get_offset(user_pagename)
-        search_params = _get_search_params(user_pagename)
-        search_data = _user_search(*search_params, offset=int(user_offset)+10)
-        _result_json(search_data, user_pagename)
-    else:
-        search_params = _get_search_params(user_pagename)
-        search_data = _user_search(*search_params)
-        _result_json(search_data, user_pagename)
+print('Start')
+for event in longpoll.listen():
+    if event.type == VkEventType.MESSAGE_NEW:
 
+        if event.to_me:
+            request = event.text
 
-main('agliullin_a')
-show_result('agliullin_a')
+            if request == "привет":
+                write_msg(event.user_id, f"Хай, {event.user_id}")
+            elif request == "N":
+                write_msg(event.user_id, f"{_user_search(*get_info(event.user_id))}")
+            elif request == "пока":
+                write_msg(event.user_id, "Пока((")
+            else:
+                write_msg(event.user_id, "Не поняла вашего ответа...")
