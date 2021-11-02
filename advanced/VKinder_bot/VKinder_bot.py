@@ -34,6 +34,7 @@ def _resp_check(method_name, params):
 
 
 def get_info(user_id):
+    """Функция для формирования параметров поиска.ПЕРЕИМЕНОВАТЬ"""
     resp = _resp_check('users.get', params={'user_ids': user_id, 'fields': 'sex, bdate, city, relation',
                                             'access_token': token_vk, 'v': '5.131'})
     response = resp.get('response')
@@ -73,7 +74,6 @@ def _user_search(sex, city, relation, birth_year, offset=1):
                                'status': relation, 'birth_year': birth_year, 'has_photo': 1, 'access_token': token_vk,
                                'v': '5.131'})
     response = resp.get('response').get('items')
-    # search_data = {'offset': offset}
     search_data = {}
     i = 1
     for item in response:
@@ -112,7 +112,7 @@ for event in longpoll.listen():
 
             if request == "привет":
                 write_msg(event.user_id, f"Хай, {event.user_id}")
-            elif request == "N":
+            elif request == "find":
                 search_params = get_info(event.user_id)
                 offset = _get_offset(event.user_id)
                 search_params.append(offset)
