@@ -1,9 +1,9 @@
 from random import randrange
 from config import token_vk_group, token_vk
-from VKinder_json import _result_json, _get_offset
+from VKinder_json import _get_offset
 import time
 import requests
-
+from VKinder_db import insert_result
 import vk_api
 from vk_api.longpoll import VkLongPoll, VkEventType
 from vk_api.upload import VkUpload
@@ -151,7 +151,7 @@ for event in longpoll.listen():
                         search_params.insert(3, request)
                 result = _user_search(*search_params)
                 result['offset'] = int(offset) + 15
-                _result_json(result, event.user_id)
+                insert_result(event.user_id, result)
                 del(result['offset'])
                 for item in result:
                     write_msg(event.user_id, f"{item}", ','.join(result[item]))
