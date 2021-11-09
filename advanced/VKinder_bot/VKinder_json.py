@@ -10,6 +10,7 @@ def _result_json(data, file_name):
 
 
 def _get_offset(file_name):
+    """Служебная. Возвращает параметр offset из JSON-файла с рез-ми поиска."""
     if os.path.exists(f"{file_name}.json"):
         with open(f"{file_name}.json", "r") as file:
             result = json.load(file)
@@ -20,6 +21,7 @@ def _get_offset(file_name):
 
 
 def show_result(file_name):
+    """Функция проверки записи в JSON-файл."""
     with open(f"{file_name}.json", "r") as file:
         result = json.load(file)
     print(len(result))
