@@ -32,8 +32,8 @@ class VK:
             return resp
 
     @staticmethod
-    def get_info(user_id):
-        """Функция для формирования параметров поиска.ПЕРЕИМЕНОВАТЬ"""
+    def _get_search_params(user_id):
+        """Служебная. Функция для формирования параметров поиска."""
         resp = VK._resp_check('users.get', params={'user_ids': user_id, 'fields': 'sex, bdate, city, relation',
                                                 'access_token': token_vk, 'v': '5.131'})
         response = resp.get('response')
@@ -106,10 +106,12 @@ class Bot:
 
     @staticmethod
     def write_msg(user_id, message, attachments=None):
+        """Функция отправки сообщения пользователю."""
         vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7), 'attachment': attachments})
 
     @staticmethod
     def _get_param(param, search_params, user_id, index):
+        """Служебная. Спрашивает недостающий параметр поиска у пользователя."""
         search_params.remove(param)
         Bot.write_msg(user_id, f"Please select your {param}.")
         for event in longpoll.listen():
@@ -120,6 +122,7 @@ class Bot:
 
     @staticmethod
     def start_bot():
+        """Основная функция. Запускает бота."""
         print('Start')
         for event in longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW:
@@ -130,7 +133,7 @@ class Bot:
                     if request == "привет":
                         Bot.write_msg(event.user_id, f"Хай, {event.user_id}")
                     elif request == "find":
-                        search_params = VK.get_info(event.user_id)
+                        search_params = VK._get_search_params(event.user_id)
                         offset = _get_offset(event.user_id)
                         search_params.append(offset)
                         for item in search_params:
