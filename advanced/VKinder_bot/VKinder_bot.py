@@ -1,6 +1,5 @@
 from random import randrange
 from config import token_vk_group, token_vk
-from VKinder_json import _get_offset
 import time
 import requests
 from VKinder_db import Database
@@ -11,15 +10,13 @@ from vk_api.upload import VkUpload
 token = token_vk_group
 token_vk = token_vk
 
-vk = vk_api.VkApi(token=token)
-upload = VkUpload(vk)
-longpoll = VkLongPoll(vk)
-
 
 class VK:
 
-    @staticmethod
-    def _resp_check(method_name, params):
+    def __init__(self, token):
+        self.token = token
+
+    def _resp_check(self, method_name, params):
         """Служебная. Функция обработки ошибок."""
         url = f"https://api.vk.com/method/{method_name}"
         response = requests.get(url, params=params)
@@ -31,10 +28,9 @@ class VK:
         else:
             return resp
 
-    @staticmethod
-    def _get_search_params(user_id):
+    def _get_search_params(self, user_id):
         """Служебная. Функция для формирования параметров поиска."""
-        resp = VK._resp_check('users.get', params={'user_ids': user_id, 'fields': 'sex, bdate, city, relation',
+        resp = self._resp_check('users.get', params={'user_ids': user_id, 'fields': 'sex, bdate, city, relation',
                                                 'access_token': token_vk, 'v': '5.131'})
         response = resp.get('response')
         search_params = []
@@ -65,10 +61,9 @@ class VK:
             search_params.append('birth_year')
         return search_params
 
-    @staticmethod
-    def _user_search(sex, city, relation, birth_year, offset=1):
+    def _user_search(self, sex, city, relation, birth_year, offset=1):
         """Служебная. Поиск по заданным параметрам."""
-        resp = VK._resp_check('users.search',
+        resp = self._resp_check('users.search',
                            params={'offset': offset, 'count': 20, 'fields': 'screen_name', 'sex': sex, 'city': city,
                                    'status': relation, 'birth_year': birth_year, 'has_photo': 1, 'access_token': token_vk,
                                    'v': '5.131'})
@@ -79,16 +74,15 @@ class VK:
             if not item.get('is_closed') and i < 6:
                 href = f"https://vk.com/{item.get('screen_name')}"
                 time.sleep(0.5)
-                search_data[href] = VK._search_result_get_photo(item.get('id'))
+                search_data[href] = self._search_result_get_photo(item.get('id'))
                 i += 1
             else:
                 pass
         return search_data
 
-    @staticmethod
-    def _search_result_get_photo(user_id):
+    def _search_result_get_photo(self, user_id):
         """Служебная. Вытаскивает 3 самые популярные фотографии профиля."""
-        resp = VK._resp_check('photos.get',
+        resp = self._resp_check('photos.get',
                            params={'owner_id': user_id, 'album_id': 'profile', 'access_token': token_vk, 'v': '5.131',
                                    'extended': '1'})
         photo_chart = {}
@@ -104,58 +98,67 @@ class VK:
 
 class Bot:
 
-    @staticmethod
-    def write_msg(user_id, message, attachments=None):
-        """Функция отправки сообщения пользователю."""
-        vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7), 'attachment': attachments})
+    def __init__(self, token, VK_cls, Database):
+        self.token = token
+        self.VK = VK_cls
+        self.Database = Database
+        self.vk = vk_api.VkApi(token=self.token)
+        self.upload = VkUpload(self.vk)
+        self.longpoll = VkLongPoll(self.vk)
 
-    @staticmethod
-    def _get_param(param, search_params, user_id, index):
+    def write_msg(self, user_id, message, attachments=None):
+        """Функция отправки сообщения пользователю."""
+        self.vk.method('messages.send', {'user_id': user_id, 'message': message,  'random_id': randrange(10 ** 7), 'attachment': attachments})
+
+    def _get_param(self, param, search_params, user_id, index):
         """Служебная. Спрашивает недостающий параметр поиска у пользователя."""
         search_params.remove(param)
-        Bot.write_msg(user_id, f"Please select your {param}.")
-        for event in longpoll.listen():
+        self.write_msg(user_id, f"Please select your {param}.")
+        for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW and event.to_me:
                 request = event.text
                 break
         search_params.insert(index, request)
 
-    @staticmethod
-    def start_bot():
+    def start_bot(self):
         """Основная функция. Запускает бота."""
         print('Start')
-        for event in longpoll.listen():
+        for event in self.longpoll.listen():
             if event.type == VkEventType.MESSAGE_NEW:
 
                 if event.to_me:
                     request = event.text
 
                     if request == "привет":
-                        Bot.write_msg(event.user_id, f"Хай, {event.user_id}")
+                        self.write_msg(event.user_id, f"Хай, {event.user_id}")
                     elif request == "find":
-                        search_params = VK._get_search_params(event.user_id)
-                        offset = _get_offset(event.user_id)
+                        search_params = self.VK._get_search_params(event.user_id)
+                        offset = self.Database._get_offset('Search')[0]
                         search_params.append(offset)
                         for item in search_params:
                             if item == 'sex':
-                                Bot._get_param('sex', search_params, event.user_id, 0)
+                                self._get_param('sex', search_params, event.user_id, 0)
                             elif item == 'city':
-                                Bot._get_param('city', search_params, event.user_id, 1)
+                                self._get_param('city', search_params, event.user_id, 1)
                             elif item == 'relation':
-                                Bot._get_param('relation', search_params, event.user_id, 2)
+                                self._get_param('relation', search_params, event.user_id, 2)
                             elif item == 'birth_year':
-                                Bot._get_param('birth_year', search_params, event.user_id, 3)
-                        result = VK._user_search(*search_params)
+                                self._get_param('birth_year', search_params, event.user_id, 3)
+                        result = self.VK._user_search(*search_params)
                         result['offset'] = int(offset) + 15
-                        Database.insert_result(event.user_id, result)
+                        self.Database.insert_result(event.user_id, result)
                         del(result['offset'])
                         for item in result:
-                            Bot.write_msg(event.user_id, f"{item}", ','.join(result[item]))
+                            self.write_msg(event.user_id, f"{item}", ','.join(result[item]))
                     elif request == "пока":
-                        Bot.write_msg(event.user_id, "Пока((")
+                        self.write_msg(event.user_id, "Пока((")
                     else:
-                        Bot.write_msg(event.user_id, "Не поняла вашего ответа...")
+                        self.write_msg(event.user_id, "Не поняла вашего ответа...")
 
+
+VK1 = VK(token_vk)
+Database1 = Database('postgresql://vkinder:1234@localhost:5432/vkinder')
+Bot1 = Bot(token_vk_group, VK1, Database1)
 
 if __name__ == "__main__":
-    Bot.start_bot()
+    Bot1.start_bot()

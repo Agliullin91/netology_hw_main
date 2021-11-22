@@ -64,6 +64,14 @@ class Student(Human):
             avr = sum(course_grade_list) / len(course_grade_list)
             return f'{course}: {round(avr, 2)}'
 
+    def kak(self):
+        print(f'hui eto {self.surname}')
+
+    def vottak(self):
+        self.kak()
+
+    def avottak(self):
+        Student.kak()
 
 class Mentor(Human):
     def __init__(self, name, surname, *courses):
@@ -163,3 +171,6 @@ print()
 print(Lecturer.avr_course_grade('html'))
 print(Lecturer.avr_course_grade('Python'))
 print(Lecturer.avr_course_grade('C++'))
+print()
+katy.vottak()
+harry.avottak()
