@@ -120,6 +120,12 @@ class Bot:
                 break
         search_params.insert(index, request)
 
+    def db_check(self, user_id):
+        if self.Database.connection is None:
+            self.write_msg(user_id, 'База данных поиска недоступна. Результаты поиска могут повторяться.')
+        else:
+            pass
+
     def start_bot(self):
         """Основная функция. Запускает бота."""
         print('Start')
@@ -133,7 +139,8 @@ class Bot:
                         self.write_msg(event.user_id, f"Хай, {event.user_id}")
                     elif request == "find":
                         search_params = self.VK._get_search_params(event.user_id)
-                        offset = self.Database._get_offset('Search')[0]
+                        self.db_check(event.user_id)
+                        offset = self.Database._get_offset('Search', event.user_id)[0]
                         search_params.append(offset)
                         for item in search_params:
                             if item == 'sex':
@@ -157,7 +164,7 @@ class Bot:
 
 
 VK1 = VK(token_vk)
-Database1 = Database('postgresql://vkinder:1234@localhost:5432/vkinder')
+Database1 = Database('postgresql://vkinder:1234@localhost:5433/vkinder')
 Bot1 = Bot(token_vk_group, VK1, Database1)
 
 if __name__ == "__main__":

@@ -1,5 +1,6 @@
 import json
 from pprint import pprint
+import os.path
 
 
 def _result_json(data, file_name):
@@ -9,9 +10,12 @@ def _result_json(data, file_name):
 
 
 def _get_offset(file_name):
-    with open(f"{file_name}.json", "r") as file:
-        result = json.load(file)
-        user_offset = result.get('offset')
+    if os.path.exists(f'{file_name}.json') is True:
+        with open(f"{file_name}.json", "r") as file:
+            result = json.load(file)
+            user_offset = result.get('offset')
+    else:
+        user_offset = 1
     return user_offset
 
 
@@ -23,4 +27,4 @@ def show_result(file_name):
 
 
 if __name__ == "__main__":
-    show_result('agliullin_a')
+    print(_get_offset('agliullin_a'))
