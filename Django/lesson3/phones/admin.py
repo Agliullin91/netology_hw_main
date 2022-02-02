@@ -5,4 +5,4 @@ from .models import Phone
 
 @admin.register(Phone)
 class PhoneAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name', 'price', 'lte_exists']
+    list_display = ['id', 'name', 'price', 'lte_exists', 'slug']

@@ -17,5 +17,5 @@ class Command(BaseCommand):
 
             for line in phone_reader:
                 # TODO: Добавьте сохранение модели
-                phone = Phone(name=line[1], price=line[3], image=line[2], release_date=line[4], lte_exists=line[5], slug=line[1])
-                phone.save()
+                tele = Phone(name=line[1], price=line[3], image=line[2], release_date=line[4], lte_exists=line[5], slug=line[1].lower().replace(' ','-'))
+                tele.save()
