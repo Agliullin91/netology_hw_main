@@ -8,7 +8,7 @@ class Sensor(models.Model):
     description = models.TextField()
 
 
-class Measurment(models.Model):
+class Measurement(models.Model):
     sensor_id = models.ForeignKey(Sensor, on_delete=models.CASCADE)
     temp = models.IntegerField()
     date = models.DateField(auto_now_add=True)
