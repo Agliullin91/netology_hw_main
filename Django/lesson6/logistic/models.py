@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from django_filters import rest_framework as filters
 
 
 class Product(models.Model):
@@ -17,3 +18,12 @@ class StockProduct(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='positions',)
     quantity = models.PositiveIntegerField(default=1)
     price = models.DecimalField(max_digits=18, decimal_places=2, validators=[MinValueValidator(0)],)
+
+
+class StockFilter(filters.FilterSet):
+    id = filters.ModelMultipleChoiceFilter(to_field_name='id', queryset=Stock.objects.all())
+    # products = filters.NumberFilter(to_field_name='products', queryset=Stock.objects.all())
+
+    class Meta:
+        model = Stock
+        fields = ['id',]
