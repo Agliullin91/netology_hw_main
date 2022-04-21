@@ -41,6 +41,11 @@ class AdvertisementSerializer(serializers.ModelSerializer):
             advs = Advertisement.objects.filter(creator=user, status='OPEN')
             if len(advs) > 9:
                 raise serializers.ValidationError('Too many opened ads!')
+        elif self.context["request"].method == "PATCH" and self.context["request"].data["status"] == "OPEN":
+            user = self.context["request"].user
+            advs = Advertisement.objects.filter(creator=user, status='OPEN')
+            if len(advs) > 9:
+                raise serializers.ValidationError('Too many opened ads! Only 10 opened ads are allowed!')
         # TODO: добавьте требуемую валидацию
 
         return data
