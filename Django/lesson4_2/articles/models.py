@@ -19,7 +19,7 @@ class Article(models.Model):
     text = models.TextField(verbose_name='Текст')
     published_at = models.DateTimeField(verbose_name='Дата публикации')
     image = models.ImageField(null=True, blank=True, verbose_name='Изображение',)
-    scope = models.ManyToManyField(Scope, through='ArticleScope', through_fields=('article', 'scope'))
+    scopes = models.ManyToManyField(Scope, through='ArticleScope', through_fields=('article', 'scope'))
 
     class Meta:
         verbose_name = 'Статья'
@@ -34,3 +34,6 @@ class ArticleScope(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
     scope = models.ForeignKey(Scope, on_delete=models.CASCADE)
     is_main = models.BooleanField(default=False, verbose_name='Основной')
+
+    class Meta:
+        ordering = ['is_main', ]
