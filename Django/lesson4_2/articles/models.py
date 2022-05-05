@@ -1,16 +1,16 @@
 from django.db import models
 
 
-class Scope(models.Model):
+class Tag(models.Model):
 
-    title = models.CharField(max_length=50, verbose_name='Название')
+    name = models.CharField(max_length=50, verbose_name='Название')
 
     class Meta:
         verbose_name = 'Раздел'
         verbose_name_plural = 'Разделы'
 
     def __str__(self):
-        return self.title
+        return self.name
 
 
 class Article(models.Model):
@@ -19,7 +19,7 @@ class Article(models.Model):
     text = models.TextField(verbose_name='Текст')
     published_at = models.DateTimeField(verbose_name='Дата публикации')
     image = models.ImageField(null=True, blank=True, verbose_name='Изображение',)
-    scopes = models.ManyToManyField(Scope, through='ArticleScope', through_fields=('article', 'scope'))
+    scopes = models.ManyToManyField(Tag, through='Scope', through_fields=('article', 'tag'))
 
     class Meta:
         verbose_name = 'Статья'
@@ -29,10 +29,10 @@ class Article(models.Model):
         return self.title
 
 
-class ArticleScope(models.Model):
+class Scope(models.Model):
 
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    scope = models.ForeignKey(Scope, on_delete=models.CASCADE)
+    tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
     is_main = models.BooleanField(default=False, verbose_name='Основной')
 
     class Meta:

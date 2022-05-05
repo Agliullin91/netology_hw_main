@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.forms import BaseInlineFormSet
 from django.core.exceptions import ValidationError
 
-from .models import Article, Scope, ArticleScope
+from .models import Article, Scope, Tag
 
 
 class RelationshipInlineFormset(BaseInlineFormSet):
@@ -20,7 +20,7 @@ class RelationshipInlineFormset(BaseInlineFormSet):
 
 
 class RelationshipInline(admin.TabularInline):
-    model = ArticleScope
+    model = Scope
     extra = 1
     formset = RelationshipInlineFormset
 
@@ -31,6 +31,6 @@ class ArticleAdmin(admin.ModelAdmin):
     inlines = [RelationshipInline, ]
 
 
-@admin.register(Scope)
+@admin.register(Tag)
 class ScopeAdmin(admin.ModelAdmin):
-    list_display = ['id', 'title', ]
+    list_display = ['id', 'name', ]
